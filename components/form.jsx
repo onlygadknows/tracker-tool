@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { philippineRegions, subprojectTypes } from "../lib/data";
 import { useRouter } from "next/navigation";
-
 
 const Form = () => {
   const [region, setRegion] = useState("");
@@ -15,46 +14,50 @@ const Form = () => {
   const [errors, setErrors] = useState({});
   const router = useRouter();
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
+    const validationErrors = {};
+    if (!region.trim()) validationErrors.region = "Set your Region";
+    if (!title.trim()) validationErrors.title = "Title is required";
+    if (!subprojectType.trim())
+      validationErrors.subprojectType = "Subproject Type is required";
+    if (!ancestralDomain.trim())
+      validationErrors.ancestralDomain = "Ancestral Domain is required";
+    if (!location.trim()) validationErrors.location = "Location is required";
+    if (!tepc.trim()) validationErrors.tepc = "TEPC is required";
 
-const handleSubmit = (event) => {
-  event.preventDefault();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-  const validationErrors = {};
-  if (!region.trim()) validationErrors.region = "Set your Region";
-  if (!title.trim()) validationErrors.title = "Title is required";
-  if (!subprojectType.trim())
-    validationErrors.subprojectType = "Subproject Type is required";
-  if (!ancestralDomain.trim())
-    validationErrors.ancestralDomain = "Ancestral Domain is required";
-  if (!location.trim()) validationErrors.location = "Location is required";
-  if (!tepc.trim()) validationErrors.tepc = "TEPC is required";
+    const formData = {
+      region,
+      title,
+      subprojectType,
+      ancestralDomain,
+      location,
+      tepc,
+    };
 
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
+    try {
+      localStorage.setItem("formSubmission", JSON.stringify(formData));
+      setRegion("");
+      setTitle("");
+      setSubprojectType("");
+      setAncestralDomain("");
+      setLocation("");
+      setTepc("");
+      setErrors({});
 
-  const formData = {
-    region,
-    title,
-    subprojectType,
-    ancestralDomain,
-    location,
-    tepc,
+      // Navigate to requirements
+      router.push("/requirements");
+    } catch (error) {
+      console.error("Failed to save form data:", error);
+      alert("There was an error saving the form. Please try again.");
+    }
   };
-
-  localStorage.setItem("formSubmission", JSON.stringify(formData));
-
-  setRegion("");
-  setTitle("");
-  setSubprojectType("");
-  setAncestralDomain("");
-  setLocation("");
-  setTepc("");
-  setErrors({});
-  router.push("/requirements");
-};
 
   return (
     <div className="w-full min-h-screen py-10 px-4 flex flex-col items-center bg-gray-100">
@@ -204,7 +207,7 @@ const handleSubmit = (event) => {
 
         <button
           type="submit"
-          className="text-white bg-blue-700 mt-4 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
+          className="text-white font-geistSans bg-blue-700 mt-4 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
         >
           Submit
         </button>
